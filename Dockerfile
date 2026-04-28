@@ -26,7 +26,6 @@ COPY packages/admin/vite.config.ts ./packages/admin/
 COPY packages/admin/index.html ./packages/admin/
 COPY packages/admin/public ./packages/admin/public
 COPY packages/shared/src ./packages/shared/src
-COPY packages/shared/tsconfig.json ./packages/shared/
 
 # Build admin frontend
 RUN bun run --cwd packages/admin build
