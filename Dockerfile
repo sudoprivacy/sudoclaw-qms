@@ -67,12 +67,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy backend dependencies from Stage 2
 COPY --from=backend-deps /app/node_modules ./node_modules
-COPY --from=backend-deps /app/packages ./packages
+COPY --from=backend-deps /app/packages/core/node_modules ./packages/core/node_modules
+COPY --from=backend-deps /app/packages/admin/node_modules ./packages/admin/node_modules
+COPY --from=backend-deps /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY package.json bun.lock ./
 
 # Copy core backend source
 COPY packages/core/src ./packages/core/src
 COPY packages/core/tsconfig.json ./packages/core/
+COPY packages/core/package.json ./packages/core/
+
+# Copy shared package
+COPY packages/shared/src ./packages/shared/src
+COPY packages/shared/tsconfig.json ./packages/shared/
+COPY packages/shared/package.json ./packages/shared/
 
 # Copy built frontend from Stage 1 (place at ./admin as expected by backend code)
 COPY --from=frontend-builder /app/packages/admin/dist ./admin
