@@ -69,7 +69,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=backend-deps /app/node_modules ./node_modules
 COPY --from=backend-deps /app/packages/core/node_modules ./packages/core/node_modules
 COPY --from=backend-deps /app/packages/admin/node_modules ./packages/admin/node_modules
-COPY --from=backend-deps /app/packages/shared/node_modules ./packages/shared/node_modules
 COPY package.json bun.lock ./
 
 # Copy core backend source
@@ -77,7 +76,7 @@ COPY packages/core/src ./packages/core/src
 COPY packages/core/tsconfig.json ./packages/core/
 COPY packages/core/package.json ./packages/core/
 
-# Copy shared package
+# Copy shared package (no dependencies, no node_modules)
 COPY packages/shared/src ./packages/shared/src
 COPY packages/shared/package.json ./packages/shared/
 
