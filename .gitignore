@@ -37,10 +37,10 @@ private*.pem
 *.key
 *.secret
 
-# Public keys are safe to commit, but optional to include
-# If you prefer to manage keys externally, uncomment below:
-# *_public_key*
-# *_public.pem
+# Public keys - also ignore for consistency
+*_public_key*
+*_public.pem
+public*.pem
 
 # ============================================
 # Database & Data
@@ -116,9 +116,7 @@ docs/*.generated.md
 # ============================================
 # Claude Code Memory (optional)
 # ============================================
-# Keep memory if you want persistence across sessions
-# .claude/memory/
-.claude/scheduled_tasks.json
+.claude/
 
 # ============================================
 # Deployment Artifacts
