@@ -64,46 +64,49 @@ app.get("/health", (c) => {
   });
 });
 
-// Root endpoint
-app.get("/", (c) => {
-  return c.json({
-    name: "Sudoclaw QMS",
-    version: "1.0.0",
-    description: "Quality Management System for Sudoclaw",
-    endpoints: {
-      telemetry: "/api/v1/telemetry",
-      dashboard: "/api/v1/dashboard",
-      alerts: "/api/v1/alerts",
-      auth: "/api/v1/auth",
-      system: "/api/v1/system",
-      crash: "/api/v1/crash",
-      health: "/health",
-    },
-  });
-});
-
-// Serve static files for admin frontend (production mode)
+// Serve frontend in production mode
 if (config.serveAdmin) {
-  // In Docker container, admin is at ./admin; in local dev, it's at ../admin/dist
-  const adminRoot = process.env.NODE_ENV === "production" ? "./admin" : "../admin/dist";
+  const adminRoot = "./admin";
 
-  app.use("/admin/*", serveStatic({ root: adminRoot }));
+  // Serve static assets (JS, CSS, images, etc.)
+  app.use("/assets/*", serveStatic({ root: adminRoot }));
 
-  // SPA fallback for admin routes
-  app.get("/admin/*", async (c) => {
-    const indexPath = process.env.NODE_ENV === "production" ? "./admin/index.html" : "../admin/dist/index.html";
-    const file = Bun.file(indexPath);
+  // Serve other static files (favicon, etc.)
+  app.use("/favicon.svg", serveStatic({ root: adminRoot }));
+  app.use("/vite.svg", serveStatic({ root: adminRoot }));
+
+  // SPA fallback: serve index.html for all non-API routes
+  app.get("*", async (c) => {
+    const file = Bun.file("./admin/index.html");
     if (await file.exists()) {
       return new Response(await file.arrayBuffer(), {
         headers: { "Content-Type": "text/html" },
       });
     }
-    return c.text("Admin frontend not built", 404);
+    return c.text("Frontend not built", 404);
   });
-}
+} else {
+  // Development mode: show API info at root
+  app.get("/", (c) => {
+    return c.json({
+      name: "Sudoclaw QMS",
+      version: "1.0.0",
+      description: "Quality Management System for Sudoclaw",
+      endpoints: {
+        telemetry: "/api/v1/telemetry",
+        dashboard: "/api/v1/dashboard",
+        alerts: "/api/v1/alerts",
+        auth: "/api/v1/auth",
+        system: "/api/v1/system",
+        crash: "/api/v1/crash",
+        health: "/health",
+      },
+    });
+  });
 
-// Not found handler
-app.all("*", notFoundHandler);
+  // Not found handler
+  app.all("*", notFoundHandler);
+}
 
 // Start server
 logger.info(`🚀 Sudoclaw QMS started on port ${config.port}`);
