@@ -79,7 +79,6 @@ COPY packages/core/package.json ./packages/core/
 
 # Copy shared package
 COPY packages/shared/src ./packages/shared/src
-COPY packages/shared/tsconfig.json ./packages/shared/
 COPY packages/shared/package.json ./packages/shared/
 
 # Copy built frontend from Stage 1 (place at ./admin as expected by backend code)
