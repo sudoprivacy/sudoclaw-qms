@@ -28,7 +28,7 @@ jobs:
           platforms: linux/amd64
           push: false
           outputs: type=docker,dest=./image.tar
-          tags: 10.0.1.22:80/dev/sudoclaw-qms:${{ steps.sha.outputs.short }}
+          tags: github.com/sudoprivacy/sudoclaw-qms:${{ steps.sha.outputs.short }}
 
       - name: Upload artifact
         if: github.event_name == 'push'
