@@ -1,0 +1,33 @@
+# Sudoclaw QMS - Development Environment
+# PostgreSQL + TimescaleDB for local development only
+# For production deployment, use deploy/docker-compose.yml
+
+services:
+  # TimescaleDB - PostgreSQL with time-series extension
+  timescaledb:
+    image: timescale/timescaledb-ha:pg16
+    container_name: sudowork-qms-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sudoclaw_qms
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sudoclaw_qms"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  timescale_data:
+    name: sudowork_qms_timescale_data_dev
+
+# Development usage:
+# 1. Start services: docker-compose up -d
+# 2. View logs: docker-compose logs -f timescaledb
+# 3. Stop services: docker-compose down
+# 4. Remove data: docker-compose down -v

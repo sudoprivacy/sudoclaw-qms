@@ -1,0 +1,167 @@
+# ============================================
+# Sudoclaw QMS .gitignore
+# ============================================
+
+# ============================================
+# Dependencies
+# ============================================
+node_modules/
+bun.lock
+package-lock.json
+yarn.lock
+.pnp.*
+.yarn/*
+
+# ============================================
+# Build Output
+# ============================================
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# ============================================
+# Environment & Secrets
+# ============================================
+# Environment files (keep examples)
+.env
+.env.local
+.env.*.local
+!.env.example
+!.env.production.example
+
+# Private keys - NEVER commit these!
+*_private_key*
+*_private.pem
+private*.pem
+*.key
+*.secret
+
+# Public keys are safe to commit, but optional to include
+# If you prefer to manage keys externally, uncomment below:
+# *_public_key*
+# *_public.pem
+
+# ============================================
+# Database & Data
+# ============================================
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+data/
+
+# ============================================
+# Logs
+# ============================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log
+
+# ============================================
+# Editor & IDE
+# ============================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-*
+*.code-workspace
+.project
+.classpath
+.settings/
+
+# ============================================
+# OS Generated
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ============================================
+# Test & Coverage
+# ============================================
+coverage/
+.nyc_output/
+.cache/
+*.lcov
+
+# ============================================
+# Temporary Files
+# ============================================
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# ============================================
+# Documentation Generated
+# ============================================
+# Keep docs directory, only ignore generated files
+docs/*.generated.md
+
+# ============================================
+# Claude Code Memory (optional)
+# ============================================
+# Keep memory if you want persistence across sessions
+# .claude/memory/
+.claude/scheduled_tasks.json
+
+# ============================================
+# Deployment Artifacts
+# ============================================
+deploy/*.tar.gz
+deploy/*.zip
+deploy/backup/
+
+# ============================================
+# Docker
+# ============================================
+.docker/
+docker-compose.override.yml
+
+# ============================================
+# Misc
+# ============================================
+*.pid
+*.seed
+*.pid.lock
+.grunt
+.lock-wscript
+.node_repl_history
+*.ts
+*.tsx
+!src/**/*.ts
+!src/**/*.tsx
+
+# ============================================
+# Packages specific
+# ============================================
+# Core package
+packages/core/.env
+packages/core/data/
+packages/core/dist/
+packages/core/node_modules/
+
+# Admin package
+packages/admin/dist/
+packages/admin/node_modules/
+
+# ============================================
+# Scripts generated files
+# ============================================
+scripts/*.log
+scripts/backup/

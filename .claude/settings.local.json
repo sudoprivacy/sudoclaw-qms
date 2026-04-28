@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun install:*)",
+      "Bash(bun pm:*)",
+      "Bash(bun run:*)",
+      "Bash(curl:*)",
+      "Bash(bun add:*)",
+      "Bash(bun test:*)",
+      "Bash(pkill -f \"bun run dev\")",
+      "Bash(pkill -f \"bun run\")",
+      "Bash(mkdir -p /Users/zhangdongdong/sudo/projects/ai-sudo/sudowork-qms/scripts)",
+      "Bash(openssl genrsa:*)",
+      "Bash(openssl rsa:*)",
+      "Bash(ls -la /Users/zhangdongdong/sudo/projects/ai-sudo/sudowork-qms/*.env*)",
+      "Bash(ls -la /Users/zhangdongdong/sudo/projects/ai-sudo/sudowork-qms/packages/core/*.env*)",
+      "Bash(pg_isready -h localhost -p 5432)",
+      "Bash(docker exec *)",
+      "Bash(bun dev *)",
+      "Bash(pnpm test:*)",
+      "Bash(npm test:*)",
+      "Bash(PGPASSWORD=postgres psql:*)",
+      "Bash(bun:*)",
+      "Bash(date -v-1d +%s)",
+      "Bash(kill 31885)",
+      "Bash(pkill -f \"vite preview\")"
+    ]
+  }
+}

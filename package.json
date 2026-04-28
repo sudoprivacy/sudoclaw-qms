@@ -1,0 +1,27 @@
+{
+  "name": "sudoclaw-qms",
+  "version": "1.0.0",
+  "description": "Sudoclaw Quality Management System - Telemetry monitoring and dashboard",
+  "private": true,
+  "workspaces": [
+    "packages/core",
+    "packages/admin",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev": "bun run --cwd packages/core dev",
+    "dev:core": "bun run --cwd packages/core dev",
+    "dev:admin": "bun run --cwd packages/admin dev",
+    "build": "bash scripts/build.sh",
+    "build:core": "bun run --cwd packages/core build",
+    "build:admin": "bun run --cwd packages/admin build",
+    "test": "bun test",
+    "lint": "bun lint packages/",
+    "clean": "rm -rf packages/*/dist packages/admin/dist",
+    "setup": "bash scripts/setup.sh",
+    "deploy": "bash scripts/deploy.sh"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}

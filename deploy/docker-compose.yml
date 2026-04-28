@@ -1,0 +1,95 @@
+# Sudoclaw QMS - Production Deployment
+# Complete stack: PostgreSQL + TimescaleDB, Redis, QMS Service
+
+services:
+  # ============================================
+  # PostgreSQL + TimescaleDB
+  # ============================================
+  timescaledb:
+    image: timescale/timescaledb-ha:pg16
+    container_name: sudowork-qms-db
+    restart: unless-stopped
+    # TimescaleDB requires environment variables (not .env file)
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sudowork_qms
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sudowork_qms"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - qms-network
+
+  # ============================================
+  # Redis (Queue + Session Storage)
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: sudowork-qms-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - qms-network
+
+  # ============================================
+  # Sudoclaw QMS Service
+  # ============================================
+  qms:
+    image: ${DOCKER_IMAGE:-ghcr.io/sudo-ai/sudowork-qms:latest}
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: sudowork-qms
+    restart: unless-stopped
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      # Mount .env file directly - Bun auto-loads .env from working directory
+      - ./.env:/app/.env:ro
+      # Persist data (source maps, etc.)
+      - qms_data:/var/lib/sudoclaw-qms
+    ports:
+      - "${PORT:-6078}:6078"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6078/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - qms-network
+
+volumes:
+  timescale_data:
+    name: sudowork_qms_timescale_data
+  redis_data:
+    name: sudowork_qms_redis_data
+  qms_data:
+    name: sudowork_qms_data
+
+networks:
+  qms-network:
+    name: sudowork_qms_network
+    driver: bridge
+
+# Usage:
+# 1. Copy .env.example to .env and update values
+#    - Note: DB_HOST=timescaledb, REDIS_HOST=redis (container names)
+# 2. Start services: docker-compose up -d
+# 3. View logs: docker-compose logs -f qms
+# 4. Stop services: docker-compose down
+# 5. Remove data: docker-compose down -v

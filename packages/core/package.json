@@ -1,0 +1,29 @@
+{
+  "name": "@sudo-qms/core",
+  "version": "1.0.0",
+  "description": "Sudoclaw QMS Core - Backend API service",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "bun run --bun src/index.ts",
+    "build": "bun build src/index.ts --outdir ./dist --target bun --minify --sourcemap",
+    "start": "bun run dist/index.js",
+    "test": "bun test",
+    "lint": "bun lint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.12.8",
+    "ioredis": "^5.6.0",
+    "jose": "^6.2.2",
+    "nodemailer": "^8.0.5",
+    "postgres": "^3.4.4",
+    "uuid": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/nodemailer": "^8.0.0",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.8.0"
+  }
+}
