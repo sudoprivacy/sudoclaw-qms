@@ -141,8 +141,8 @@ docker-compose.override.yml
 .node_repl_history
 *.ts
 *.tsx
-!src/**/*.ts
-!src/**/*.tsx
+!**/src/**/*.ts
+!**/src/**/*.tsx
 !**/vite.config.ts
 !**/tailwind.config.ts
 !**/postcss.config.ts
