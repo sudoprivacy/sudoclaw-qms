@@ -74,8 +74,8 @@ COPY package.json bun.lock ./
 COPY packages/core/src ./packages/core/src
 COPY packages/core/tsconfig.json ./packages/core/
 
-# Copy built frontend from Stage 1
-COPY --from=frontend-builder /app/packages/admin/dist ./packages/admin/dist
+# Copy built frontend from Stage 1 (place at ./admin as expected by backend code)
+COPY --from=frontend-builder /app/packages/admin/dist ./admin
 
 # Create data directory with proper permissions
 RUN mkdir -p /var/lib/sudoclaw-qms && chmod -R 777 /var/lib/sudoclaw-qms
