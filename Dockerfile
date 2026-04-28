@@ -2,13 +2,17 @@
 # Multi-stage build for production deployment
 
 # ============================================
-# Build stage
+# Stage 1: Frontend Build
 # ============================================
-FROM oven/bun:1 AS builder
+FROM oven/bun:1-debian AS frontend-builder
 
 WORKDIR /app
 
-# Copy package files for dependency installation
+# Install build tools (some node modules may need them)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 build-essential && rm -rf /var/lib/apt/lists/*
+
+# Copy package files for monorepo
 COPY package.json bun.lock ./
 COPY packages/core/package.json ./packages/core/
 COPY packages/admin/package.json ./packages/admin/
@@ -17,52 +21,77 @@ COPY packages/shared/package.json ./packages/shared/
 # Install all dependencies
 RUN bun install --frozen-lockfile
 
-# Copy source files
-COPY packages/core/src ./packages/core/src
-COPY packages/core/tsconfig.json ./packages/core/
+# Copy admin frontend source files
+COPY packages/admin/package.json ./packages/admin/
 COPY packages/admin/src ./packages/admin/src
 COPY packages/admin/tsconfig.json ./packages/admin/
 COPY packages/admin/tsconfig.node.json ./packages/admin/
 COPY packages/admin/vite.config.ts ./packages/admin/
 COPY packages/admin/index.html ./packages/admin/
 COPY packages/admin/public ./packages/admin/public
+COPY packages/shared ./packages/shared
 
-# Build admin frontend
+# Build admin frontend (vite outputs to packages/admin/dist)
 RUN bun run --cwd packages/admin build
 
-# Build core backend
-RUN bun build packages/core/src/index.ts --outdir ./packages/core/dist --target bun
-
 # ============================================
-# Production stage
+# Stage 2: Backend Dependencies
 # ============================================
-FROM oven/bun:1-slim AS production
+FROM oven/bun:1-debian AS backend-deps
 
 WORKDIR /app
 
-# Install curl for healthcheck
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# Install build tools for native modules
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 build-essential && rm -rf /var/lib/apt/lists/*
 
-# Create data directory
-RUN mkdir -p /var/lib/sudoclaw-qms
+# Copy package files
+COPY package.json bun.lock ./
+COPY packages/core/package.json ./packages/core/
+COPY packages/admin/package.json ./packages/admin/
+COPY packages/shared/package.json ./packages/shared/
 
-# Copy built files
-COPY --from=builder /app/packages/core/dist ./dist
-COPY --from=builder /app/packages/admin/dist ./admin
-COPY --from=builder /app/packages/core/package.json ./package.json
+# Install dependencies
+RUN bun install --frozen-lockfile
 
-# Set default environment variables
+# ============================================
+# Stage 3: Production Build
+# ============================================
+FROM oven/bun:1-debian AS production
+
+WORKDIR /app
+
+# Install runtime tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl && rm -rf /var/lib/apt/lists/*
+
+# Copy backend dependencies from Stage 2
+COPY --from=backend-deps /app/node_modules ./node_modules
+COPY --from=backend-deps /app/packages ./packages
+COPY package.json bun.lock ./
+
+# Copy core backend source
+COPY packages/core/src ./packages/core/src
+COPY packages/core/tsconfig.json ./packages/core/
+
+# Copy built frontend from Stage 1
+COPY --from=frontend-builder /app/packages/admin/dist ./packages/admin/dist
+
+# Create data directory with proper permissions
+RUN mkdir -p /var/lib/sudoclaw-qms && chmod -R 777 /var/lib/sudoclaw-qms
+
+# Expose port
+EXPOSE 6100
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:6100/health || exit 1
+
+# Set production environment
 ENV NODE_ENV=production
-ENV PORT=6078
+ENV PORT=6100
 ENV HOST=0.0.0.0
 ENV SERVE_ADMIN=true
 
-# Expose port
-EXPOSE 6078
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:6078/health || exit 1
-
-# Run
-CMD ["bun", "run", "dist/index.js"]
+# Start the application
+CMD ["bun", "run", "packages/core/src/index.ts"]

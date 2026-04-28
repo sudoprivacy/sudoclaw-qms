@@ -46,7 +46,7 @@ services:
   # Sudoclaw QMS Service
   # ============================================
   qms:
-    image: ${DOCKER_IMAGE:-ghcr.io/sudo-ai/sudowork-qms:latest}
+    image: ghcr.io/sudo-ai/sudowork-qms:latest
     build:
       context: ..
       dockerfile: Dockerfile
@@ -63,9 +63,9 @@ services:
       # Persist data (source maps, etc.)
       - qms_data:/var/lib/sudoclaw-qms
     ports:
-      - "${PORT:-6078}:6078"
+      - "6100:6100"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6078/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:6100/health"]
       interval: 30s
       timeout: 10s
       retries: 3
