@@ -9,7 +9,7 @@ FROM oven/bun:1 AS builder
 WORKDIR /app
 
 # Copy package files for dependency installation
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 COPY packages/core/package.json ./packages/core/
 COPY packages/admin/package.json ./packages/admin/
 COPY packages/shared/package.json ./packages/shared/
@@ -22,10 +22,10 @@ COPY packages/core/src ./packages/core/src
 COPY packages/core/tsconfig.json ./packages/core/
 COPY packages/admin/src ./packages/admin/src
 COPY packages/admin/tsconfig.json ./packages/admin/
+COPY packages/admin/tsconfig.node.json ./packages/admin/
 COPY packages/admin/vite.config.ts ./packages/admin/
 COPY packages/admin/index.html ./packages/admin/
 COPY packages/admin/public ./packages/admin/public
-COPY packages/shared/src ./packages/shared/src
 
 # Build admin frontend
 RUN bun run --cwd packages/admin build
