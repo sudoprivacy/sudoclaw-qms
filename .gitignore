@@ -105,6 +105,9 @@ temp/
 *.bak
 *.backup
 *.old
+*.tar.gz
+*.tar
+*.gz
 
 # ============================================
 # Documentation Generated

@@ -15,7 +15,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: sudowork_qms
     volumes:
-      - timescale_data:/var/lib/postgresql/data
+      - timescale_data:/home/postgres/pgdata/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d sudowork_qms"]
       interval: 10s
