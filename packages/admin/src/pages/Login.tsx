@@ -101,10 +101,6 @@ export default function Login() {
             </Button>
           </Form.Item>
         </Form>
-
-        <div style={{ textAlign: "center", color: "#999" }}>
-          <small>默认管理员: admin / admin123</small>
-        </div>
       </Card>
     </div>
   );
